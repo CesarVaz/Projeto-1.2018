@@ -3,6 +3,7 @@
 Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed):
     animation(texture, imageCount, switchTime)
 {
+
     this->speed = speed;
     def_Speed = speed;
     row = 0;
@@ -39,11 +40,12 @@ void Player::Update(float deltaTime)
 {
 
     velocity.x = 0.0f;
-    jumpHeight = 176.0f;
+    jumpHeight = 180.0f;
 
     //gravidade:
     velocity.y += 981.0f * deltaTime;
-
+//if(hitTheFloor == true)
+//{
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
     {
         velocity.x -= speed;
@@ -53,7 +55,7 @@ void Player::Update(float deltaTime)
     {
         velocity.x += speed;
     }
-
+//}
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && hitTheFloor == true)
     {
         velocity.y = -sqrtf(2.0f * 981.0f * jumpHeight);
@@ -122,10 +124,12 @@ void Player::CheckActivePlatform(Platform &platform)
     else
         platform.set_isActivePlatform(true);
 
+    /*
     if(platform.get_isActivePlatform() == true)
     {
         cout << (body.getPosition().y - (platform.getBody().getPosition().y + platform.getBody().getSize().y / 2));
     }
+    */
 
     if(platform.get_isActivePlatform() == true)
     {
@@ -148,7 +152,7 @@ void Player::StaticCheckCollision(Platform &platform)
             if(body.getPosition().y < platform.getBody().getPosition().y - platform.getBody().getSize().y / 2)
             {
                 body.move(0.0, - 1.0);
-                velocity.y = 0.0f;
+                //velocity.y = 0.0f;
                 hitTheFloor = true;
             }
 
@@ -208,3 +212,27 @@ void Player::MovableCheckCollision(Platform &platform, float mass)
         }
     }
 }
+
+bool Player::getFaceRight()
+{
+    return faceRight;
+}
+
+//PARA A CLASSE COLLIDER:
+/*
+void Player::setHitTheFloor(bool hitTheFloor)
+{
+    this->hitTheFloor = hitTheFloor;
+}
+
+void Player::setVelocity(float x, float y)
+{
+    velocity.x = x;
+    velocity.y = y;
+}
+
+sf::Vector2f Player::getVelocity()
+{
+    return velocity;
+}
+*/

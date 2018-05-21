@@ -1,10 +1,11 @@
 # depslib dependency file v1.0
-1526346384 source:c:\users\custom\documents\projetos c\template sfml\main.cpp
+1526907272 source:c:\users\custom\documents\projetos c\template sfml\main.cpp
 	<SFML/Graphics.hpp>
 	<iostream>
 	"Player.h"
 	"Platform.h"
 	<stdlib.h>
+	"Projectile.h"
 
 1486736397 c:\users\custom\documents\projetos c\template sfml\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -394,7 +395,7 @@
 	<string>
 	<vector>
 
-1526333815 c:\users\custom\documents\projetos c\template sfml\include\player.h
+1526853088 c:\users\custom\documents\projetos c\template sfml\include\player.h
 	<SFML/Graphics.hpp>
 	"Animation.h"
 	"Platform.h"
@@ -407,8 +408,7 @@
 1526278062 c:\users\custom\documents\projetos c\template sfml\include\platform.h
 	<SFML/Graphics.hpp>
 
-1525782706 c:\users\custom\documents\projetos c\template sfml\include\collider.h
-	"Player.h"
+1526842259 c:\users\custom\documents\projetos c\template sfml\include\collider.h
 
 1524749081 source:c:\users\custom\documents\projetos c\template sfml\src\animation.cpp
 	"Animation.h"
@@ -416,14 +416,17 @@
 1526270247 source:c:\users\custom\documents\projetos c\template sfml\src\platform.cpp
 	"Platform.h"
 
-1526333815 source:c:\users\custom\documents\projetos c\template sfml\src\player.cpp
+1526853088 source:c:\users\custom\documents\projetos c\template sfml\src\player.cpp
 	"Player.h"
 
-1526333367 c:\users\custom\documents\projetos c\template sfml\include\projectile.h
+1526907263 c:\users\custom\documents\projetos c\template sfml\include\projectile.h
 	<SFML/Graphics.hpp>
-	"Animation.h"
 	"Platform.h"
+	"Player.h"
 
-1526333367 source:c:\users\custom\documents\projetos c\template sfml\src\projectile.cpp
+1526855856 source:c:\users\custom\documents\projetos c\template sfml\src\projectile.cpp
 	"Projectile.h"
+
+1526842259 source:c:\users\custom\documents\projetos c\template sfml\src\collider.cpp
+	"Collider.h"
 

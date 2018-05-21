@@ -3,8 +3,8 @@
 #include "Animation.h"
 #include "Platform.h"
 #include <math.h>
-
 #include <iostream>
+
 using namespace std;
 
 
@@ -30,6 +30,14 @@ class Player
             void StaticCheckCollision(Platform &platform);
             void MovableCheckCollision(Platform &platform, float mass);
 
+            bool getFaceRight();
+                //para o Collider:
+                /*
+                void setHitTheFloor(bool hitTheFloor);
+                void setVelocity(float x, float y);
+                sf::Vector2f getVelocity();
+                */
+
     private:
         sf::RectangleShape body;
         Animation animation;
@@ -40,5 +48,6 @@ class Player
         sf::Vector2f velocity;
         float jumpHeight;
         sf::Vector2f collisionDirection; //sem uso
+
 };
 

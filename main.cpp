@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Platform.h"
 #include <stdlib.h>
+#include "Projectile.h"
 
 using namespace std;
 
@@ -18,7 +19,7 @@ int main()
 {
     float def_Speed = 500.0f;
 
-    sf::RenderWindow window(sf::VideoMode(512, 512), "SFML Tutorial", sf::Style::Close | sf::Style::Resize);
+    sf::RenderWindow window(sf::VideoMode(512, 512), "Jogo de Tiro em 2D", sf::Style::Close | sf::Style::Resize);
     sf::View view(sf::Vector2f(0.0f, 0.0f),sf::Vector2f(VIEW_HEIGHT, VIEW_HEIGHT));
     sf::Texture playerTexture;
     playerTexture.loadFromFile("textures/Player_tex.png");
@@ -33,6 +34,10 @@ int main()
     floorTexture.loadFromFile("textures/floor.png");
 
     Player player(&playerTexture, sf::Vector2u(3, 4), 0.1f, def_Speed);
+
+    Projectile projectile1(player);
+    //Projectile projectile2(player.getBody().getPosition());
+    //Projectile projectile3(player.getBody().getPosition());
 
     Platform ground(&groundTexture, sf::Vector2f(576.0f, 156.0f), sf::Vector2f(1020.0f, 0.0f));
     Platform ground2(&groundTexture, sf::Vector2f(576.0f, 156.0f), sf::Vector2f(1596.0f, 156.0f));
@@ -63,16 +68,36 @@ int main()
         }
 
         player.Update(deltaTime);
+
         view.setCenter(player.GetPosition());
-        player.StaticCheckCollision(ground);
-        player.StaticCheckCollision(ground2);
-        player.StaticCheckCollision(ground3);
-        //player.MovableCheckCollision(ground, 9.0);
+
         player.CheckActivePlatform(ground);
         player.CheckActivePlatform(ground2);
         player.CheckActivePlatform(ground3);
 
-        cout << "Plataforma ground " << ground.get_isActivePlatform() << endl;
+        player.StaticCheckCollision(ground);
+        player.StaticCheckCollision(ground2);
+        player.StaticCheckCollision(ground3);
+
+        projectile1.StaticCheckCollision(ground);
+        projectile1.StaticCheckCollision(ground2);
+        projectile1.StaticCheckCollision(ground3);
+
+            //TIRO
+            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                if(projectile1.getIsAvailable() == true)
+                {
+                    projectile1.setFaceRight(player.getFaceRight());
+                    projectile1.setIsAvailable(false);
+                    projectile1.setBodyPosition(player.getBody().getPosition(), player.getFaceRight());
+
+                }
+            }
+            projectile1.Update(deltaTime);
+
+
+        //cout << "Plataforma ground " << ground.get_isActivePlatform() << endl;
 
         window.clear(sf::Color(150, 150, 150));
         window.setView(view);
@@ -83,7 +108,10 @@ int main()
         ground2.Draw(window);
         ground3.Draw(window);
         bush.Draw(window);
-
+            //DESENHA O TIRO
+            if(projectile1.getIsAvailable() == false)
+            projectile1.Draw(window);
+            cout << endl <<projectile1.getBody().getPosition().x << endl;
 
         window.display();
     }
