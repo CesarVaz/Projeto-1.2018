@@ -31,12 +31,6 @@ class Player
             void MovableCheckCollision(Platform &platform, float mass);
 
             bool getFaceRight();
-                //para o Collider:
-                /*
-                void setHitTheFloor(bool hitTheFloor);
-                void setVelocity(float x, float y);
-                sf::Vector2f getVelocity();
-                */
 
     private:
         sf::RectangleShape body;

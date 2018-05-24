@@ -9,12 +9,12 @@ Projectile::Projectile(Player player)
 
     if(faceRight == true)
     {
-        iniPosition.x += 60.0f;
+        iniPosition.x += 65.0f;
         iniPosition.y += 7.5f;
     }
     else
     {
-        iniPosition.x -= 60.0f;
+        iniPosition.x -= 65.0f;
         iniPosition.y += 7.5f;
     }
 
@@ -31,8 +31,6 @@ void Projectile::Update(float deltaTime)
 {
     if(isAvailable == false)
     {
-
-
         if(faceRight == true)
         {
             velocity.x = 8000.0f;
@@ -45,6 +43,8 @@ void Projectile::Update(float deltaTime)
         velocity.y += 981.0f * deltaTime;
         body.move(velocity * deltaTime);
     }
+
+
 }
 
 void Projectile::Draw(sf::RenderWindow& window)
@@ -53,7 +53,7 @@ void Projectile::Draw(sf::RenderWindow& window)
 }
 
 
-void Projectile::StaticCheckCollision(Platform &platform)
+void Projectile::StaticCheckCollision(Platform &platform, Player &player)
 {
     if(body.getGlobalBounds().intersects(platform.getBody().getGlobalBounds()))
     {
@@ -61,6 +61,15 @@ void Projectile::StaticCheckCollision(Platform &platform)
         velocity.y = 0.0f;
         velocity.x = 0.0f;
     }
+
+    /* RETIRAR DO COMENTARIO QUANTO TIVER OUTROS "PLAYERS"
+    if(body.getGlobalBounds().intersects(player.getBody().getGlobalBounds()))
+    {
+        setIsAvailable(true);
+        velocity.y = 0.0f;
+        velocity.x = 0.0f;
+    }
+    */
 }
 
 void Projectile::setBodyPosition(sf::Vector2f playerPos, bool faceRight)
@@ -68,12 +77,12 @@ void Projectile::setBodyPosition(sf::Vector2f playerPos, bool faceRight)
     iniPosition = playerPos;
     if(faceRight == true)
     {
-        iniPosition.x += 60.0f;
+        iniPosition.x += 65.0f;
         iniPosition.y += 7.5f;
     }
     else
     {
-        iniPosition.x -= 60.0f;
+        iniPosition.x -= 65.0f;
         iniPosition.y += 7.5f;
     }
     body.setPosition(iniPosition);
@@ -98,3 +107,8 @@ bool Projectile::setFaceRight(bool faceRight)
 {
     this->faceRight = faceRight;
 }
+
+            sf::Vector2f Projectile::setVelocityY(float y)
+            {
+                velocity.y = y;
+            }

@@ -21,13 +21,15 @@ class Projectile
 
             void Update(float deltaTime);
 
-            void StaticCheckCollision(Platform &platform);
+            void StaticCheckCollision(Platform &platform, Player &player);
 
             void setIsAvailable(bool available);
 
             bool getIsAvailable();
 
             bool setFaceRight(bool faceRight);
+
+            sf::Vector2f setVelocityY(float y);
 
     protected:
 

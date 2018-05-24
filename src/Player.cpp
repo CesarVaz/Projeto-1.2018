@@ -217,22 +217,3 @@ bool Player::getFaceRight()
 {
     return faceRight;
 }
-
-//PARA A CLASSE COLLIDER:
-/*
-void Player::setHitTheFloor(bool hitTheFloor)
-{
-    this->hitTheFloor = hitTheFloor;
-}
-
-void Player::setVelocity(float x, float y)
-{
-    velocity.x = x;
-    velocity.y = y;
-}
-
-sf::Vector2f Player::getVelocity()
-{
-    return velocity;
-}
-*/

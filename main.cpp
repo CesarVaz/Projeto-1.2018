@@ -7,20 +7,26 @@
 
 using namespace std;
 
-static const float VIEW_HEIGHT = 512.0f;
+static const float VIEW_HEIGHT = 1024.0f;
+static const float VIEW_WIDTH = 600.0f;
 
 void ResizeView(const sf::RenderWindow& window, sf::View& view)
 {
     float aspectRatio = float(window.getSize().x / float(window.getSize().y));
-    view.setSize(VIEW_HEIGHT * aspectRatio, VIEW_HEIGHT);
+    view.setSize(VIEW_HEIGHT * aspectRatio, VIEW_WIDTH * aspectRatio);
 }
 
 int main()
 {
     float def_Speed = 500.0f;
 
-    sf::RenderWindow window(sf::VideoMode(512, 512), "Jogo de Tiro em 2D", sf::Style::Close | sf::Style::Resize);
-    sf::View view(sf::Vector2f(0.0f, 0.0f),sf::Vector2f(VIEW_HEIGHT, VIEW_HEIGHT));
+            //TIRO
+            float totalTime = 0.0f;
+            float switchTime = 0.25f;
+
+    sf::RenderWindow window(sf::VideoMode(VIEW_HEIGHT, VIEW_WIDTH), "Jogo de Tiro em 2D", sf::Style::Close | sf::Style::Resize);
+
+    sf::View view(sf::Vector2f(0.0f, 0.0f),sf::Vector2f(VIEW_HEIGHT, VIEW_WIDTH));
     sf::Texture playerTexture;
     playerTexture.loadFromFile("textures/Player_tex.png");
 
@@ -79,25 +85,29 @@ int main()
         player.StaticCheckCollision(ground2);
         player.StaticCheckCollision(ground3);
 
-        projectile1.StaticCheckCollision(ground);
-        projectile1.StaticCheckCollision(ground2);
-        projectile1.StaticCheckCollision(ground3);
+        projectile1.StaticCheckCollision(ground, player);
+        projectile1.StaticCheckCollision(ground2, player);
+        projectile1.StaticCheckCollision(ground3, player);
 
-            //TIRO
-            if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        //TIRO
+            totalTime += deltaTime;
+
+            if (totalTime >= switchTime)
             {
-                if(projectile1.getIsAvailable() == true)
+                projectile1.setVelocityY(0.0f);
+                projectile1.setIsAvailable(true);
+                if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {
-                    projectile1.setFaceRight(player.getFaceRight());
-                    projectile1.setIsAvailable(false);
-                    projectile1.setBodyPosition(player.getBody().getPosition(), player.getFaceRight());
-
+                    //if(projectile1.getIsAvailable() == true)
+                    //{
+                        totalTime = 0.0f;
+                        projectile1.setIsAvailable(false);
+                        projectile1.setFaceRight(player.getFaceRight());
+                        projectile1.setBodyPosition(player.getBody().getPosition(), player.getFaceRight());
+                    //}
                 }
             }
-            projectile1.Update(deltaTime);
-
-
-        //cout << "Plataforma ground " << ground.get_isActivePlatform() << endl;
+                projectile1.Update(deltaTime);
 
         window.clear(sf::Color(150, 150, 150));
         window.setView(view);
