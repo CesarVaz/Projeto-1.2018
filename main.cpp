@@ -17,7 +17,7 @@ void ResizeView(const sf::RenderWindow& window, sf::View& view)
 
 int main()
 {
-                            int i = 0;
+    unsigned int i = 0;
 
     float def_Speed = 500.0f;
 
@@ -83,13 +83,6 @@ int main()
         player.StaticCheckCollision(ground2);
         player.StaticCheckCollision(ground3);
 
-        player.projectile.StaticCheckCollision(ground.getBody());
-        player.projectile.StaticCheckCollision(ground2.getBody());
-        player.projectile.StaticCheckCollision(ground3.getBody());
-        player.projectile.StaticCheckCollision(player.getBody());
-
-        player.projectile.Update(deltaTime);
-
         window.clear(sf::Color(150, 150, 150));
         window.setView(view);
 
@@ -100,16 +93,28 @@ int main()
         ground3.Draw(window);
         bush.Draw(window);
 
-            //DESENHA O TIRO
-            if(player.projectile.getIsAvailable() == false)
-            {
-                player.projectile.Draw(window);
-            }
+        for(i = 0; i < player.vectProj.size(); i++)
+        {
+            player.vectProj[i].StaticCheckCollision(ground.getBody());
+            player.vectProj[i].StaticCheckCollision(ground2.getBody());
+            player.vectProj[i].StaticCheckCollision(ground3.getBody());
+            player.vectProj[i].StaticCheckCollision(player.getBody(), player.damage);
 
-            for(i = 0; i < player.vectT.size(); i++)
+            if(player.vectProj[i].collision == true)
             {
-                player.vectT[i].Draw(window);
+                player.vectProj.erase (player.vectProj.begin()+i);
+                cout << player.damage << endl;
             }
+        }
+
+        player.vectProj.shrink_to_fit();
+        //cout << player.vectProj.size() << endl;
+
+        for(i = 0; i < player.vectProj.size(); i++)
+        {
+            player.vectProj[i].Update(deltaTime);
+            player.vectProj[i].Draw(window);
+        }
 
         window.display();
     }

@@ -5,7 +5,7 @@ static const float jCD = 0.5f;
 
 Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, sf::Texture* projTexture):
         animation(texture, imageCount, switchTime), projectile(projTexture)
-    {
+{
         this->speed = speed;
         row = 0;
         faceRight = true;
@@ -14,15 +14,13 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
         shootCD = sCD;
         jumpCD = jCD;
 
-        projectile.setFaceRight(this->faceRight);
-        projectile.setBodyPosition(body.getPosition(), faceRight);
-
         texture->setSmooth(true);
         body.setSize(sf::Vector2f(100.0f, 150.0f));
         body.setOrigin(body.getSize()/2.0f);
         body.setTexture(texture);
 
-    }
+        damage = 0.0f;
+}
 
 Player::~Player()
 {
@@ -64,23 +62,16 @@ void Player::Update(float deltaTime)
     //TIRO
     if (shootCD >= sCD)
     {
-        projectile.setVelocityY(0.0f);
-        projectile.setIsAvailable(true);
-
         if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
-            //if(projectile.getIsAvailable() == true)
-            //{
-                projectile.addVelocity(velocity);
-                shootCD = 0.0f;
-                projectile.setIsAvailable(false);
-                projectile.setFaceRight(getFaceRight());
-                projectile.setBodyPosition(getBody().getPosition(), getFaceRight());
-            //}
+            vectProj.push_back(projectile);
+            vectProj[vectProj.size() - 1].addVelocity(velocity);
+            shootCD = 0.0f;
+            vectProj[vectProj.size() - 1].setFaceRight(getFaceRight());
+            vectProj[vectProj.size() - 1].setBodyPosition(body.getPosition(), getFaceRight());
 
             vectT.push_back(t1);
             vectT[vectT.size() - 1].setBodyPosition(body.getPosition(), faceRight);
-            //vectT[vectT.size() - 1].
         }
     }
 
@@ -92,12 +83,20 @@ void Player::Update(float deltaTime)
         {
             vectT.erase (vectT.begin()+i);
         }
-
     }
+    vectT.shrink_to_fit();
+    //cout << vectT.size() << endl;
 
-      vectT.shrink_to_fit();
+    for(i = 0; i < vectProj.size(); i++)
+    {
+        vectProj[i].totalTime += deltaTime;
 
-      cout << vectT.size() << endl;
+        if(vectProj[i].totalTime >= vectProj[i].duration)
+        {
+            vectProj.erase (vectProj.begin()+i);
+            cout << vectProj.size() << endl;
+        }
+    }
 
     if(hitTheFloor == true)
     {

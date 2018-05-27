@@ -28,10 +28,7 @@ class Projectile
         void Update(float deltaTime);
 
         void StaticCheckCollision(sf::RectangleShape target);
-
-        void setIsAvailable(bool available);
-
-        bool getIsAvailable();
+        void StaticCheckCollision(sf::RectangleShape target, float &damage);
 
         void setFaceRight(bool faceRight);
 
@@ -39,7 +36,11 @@ class Projectile
 
         void addVelocity(sf::Vector2f velocity);
 
+        bool collision;
 
+        float duration;
+
+        float totalTime;
 
     protected:
 
@@ -48,7 +49,6 @@ class Projectile
         float speed, def_Speed;
         bool faceRight;
         sf::Vector2f velocity;
-        bool isAvailable;
         sf::Vector2f iniPosition;
         Animation animation;
 };

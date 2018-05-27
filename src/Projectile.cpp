@@ -6,9 +6,11 @@ Projectile::Projectile(sf::Texture* projTexture):
     body.setSize(sf::Vector2f(10,5));
     body.setOrigin(body.getSize()/2.0f);
     body.setTexture(projTexture);
-    isAvailable = false;
     velocity.x = 0.0f;
     velocity.y = 0.0f;
+    collision = false;
+    duration = 2.0f;
+    totalTime = 0.0f;
 }
 
 
@@ -19,22 +21,19 @@ Projectile::~Projectile()
 
 void Projectile::Update(float deltaTime)
 {
-    if(isAvailable == false)
-    {
         if(faceRight == true)
         {
-            velocity.x = 2000.0f;
+            velocity.x = 20.0f;
         }
 
         else
         {
-            velocity.x = -2000.0f;
+            velocity.x = -20.0f;
         }
         velocity.y += 981.0f * deltaTime;
         body.move(velocity * deltaTime);
         animation.Update(0, 0.0f, faceRight);
         body.setTextureRect(animation.uvRect);
-    }
 
 }
 
@@ -46,13 +45,31 @@ void Projectile::Draw(sf::RenderWindow& window)
 
 void Projectile::StaticCheckCollision(sf::RectangleShape target)
 {
-    if(body.getGlobalBounds().intersects(target.getGlobalBounds()))
+    if(collision == false)
     {
-        setIsAvailable(true);
-        velocity.y = 0.0f;
-        velocity.x = 0.0f;
+        if(body.getGlobalBounds().intersects(target.getGlobalBounds()))
+        {
+            velocity.y = 0.0f;
+            velocity.x = 0.0f;
+            collision = true;
+        }
+        //else
+        //    collision = false;
     }
+}
 
+void Projectile::StaticCheckCollision(sf::RectangleShape target, float &damage)
+{
+    if(collision == false)
+    {
+        if(body.getGlobalBounds().intersects(target.getGlobalBounds()))
+        {
+            velocity.y = 0.0f;
+            velocity.x = 0.0f;
+            collision = true;
+            damage += 20.0f;
+        }
+    }
 }
 
 void Projectile::setBodyPosition(sf::Vector2f playerPos, bool faceRight)
@@ -74,16 +91,6 @@ void Projectile::setBodyPosition(sf::Vector2f playerPos, bool faceRight)
 sf::RectangleShape Projectile::getBody()
 {
     return body;
-}
-
-void Projectile::setIsAvailable(bool available)
-{
-    isAvailable = available;
-}
-
-bool Projectile::getIsAvailable()
-{
-    return isAvailable;
 }
 
 void Projectile::setFaceRight(bool faceRight)

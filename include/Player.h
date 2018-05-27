@@ -19,10 +19,11 @@ class Player
 
     public:
         Projectile projectile;
+        vector<Projectile> vectProj;
 
         Rect_Teste t1;
         vector<Rect_Teste> vectT;
-        int i;
+        unsigned int i;
 
     public:
         Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, sf::Texture* projTexture);
@@ -45,7 +46,7 @@ class Player
 
             bool getFaceRight();
 
-
+            float damage;
 
     private:
         sf::RectangleShape body;
