@@ -1,12 +1,18 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Platform.h"
-#include "Player.h"
+
+#include "Animation.h"
 
 class Projectile
 {
+    friend class Player;
+
     public:
-        Projectile(Player player);
+        Projectile(sf::Texture* projTexture);
+
+        Projectile();
+
         virtual ~Projectile();
 
         void Draw(sf::RenderWindow& window);
@@ -19,17 +25,21 @@ class Projectile
 
         sf::RectangleShape getBody();
 
-            void Update(float deltaTime);
+        void Update(float deltaTime);
 
-            void StaticCheckCollision(Platform &platform, Player &player);
+        void StaticCheckCollision(sf::RectangleShape target);
 
-            void setIsAvailable(bool available);
+        void setIsAvailable(bool available);
 
-            bool getIsAvailable();
+        bool getIsAvailable();
 
-            bool setFaceRight(bool faceRight);
+        void setFaceRight(bool faceRight);
 
-            sf::Vector2f setVelocityY(float y);
+        void setVelocityY(float y);
+
+        void addVelocity(sf::Vector2f velocity);
+
+
 
     protected:
 
@@ -40,6 +50,5 @@ class Projectile
         sf::Vector2f velocity;
         bool isAvailable;
         sf::Vector2f iniPosition;
-
-
+        Animation animation;
 };

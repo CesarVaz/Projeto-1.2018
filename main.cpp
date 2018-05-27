@@ -3,7 +3,6 @@
 #include "Player.h"
 #include "Platform.h"
 #include <stdlib.h>
-#include "Projectile.h"
 
 using namespace std;
 
@@ -18,11 +17,9 @@ void ResizeView(const sf::RenderWindow& window, sf::View& view)
 
 int main()
 {
-    float def_Speed = 500.0f;
+                            int i = 0;
 
-            //TIRO
-            float totalTime = 0.0f;
-            float switchTime = 0.25f;
+    float def_Speed = 500.0f;
 
     sf::RenderWindow window(sf::VideoMode(VIEW_HEIGHT, VIEW_WIDTH), "Jogo de Tiro em 2D", sf::Style::Close | sf::Style::Resize);
 
@@ -39,11 +36,10 @@ int main()
     sf::Texture floorTexture;
     floorTexture.loadFromFile("textures/floor.png");
 
-    Player player(&playerTexture, sf::Vector2u(3, 4), 0.1f, def_Speed);
+    sf::Texture bulletTexture;
+    bulletTexture.loadFromFile("textures/Bullet.png");
 
-    Projectile projectile1(player);
-    //Projectile projectile2(player.getBody().getPosition());
-    //Projectile projectile3(player.getBody().getPosition());
+    Player player(&playerTexture, sf::Vector2u(3, 4), 0.1f, def_Speed, &bulletTexture);
 
     Platform ground(&groundTexture, sf::Vector2f(576.0f, 156.0f), sf::Vector2f(1020.0f, 0.0f));
     Platform ground2(&groundTexture, sf::Vector2f(576.0f, 156.0f), sf::Vector2f(1596.0f, 156.0f));
@@ -61,6 +57,7 @@ int main()
         sf::Event evnt;
         while (window.pollEvent(evnt))
         {
+            deltaTime = clock.restart().asSeconds();
             switch (evnt.type)
             {
             case sf::Event::Closed:
@@ -68,6 +65,7 @@ int main()
                 break;
 
             case sf::Event::Resized:
+                deltaTime = clock.restart().asSeconds();
                 ResizeView(window, view);
                 break;
             }
@@ -85,29 +83,12 @@ int main()
         player.StaticCheckCollision(ground2);
         player.StaticCheckCollision(ground3);
 
-        projectile1.StaticCheckCollision(ground, player);
-        projectile1.StaticCheckCollision(ground2, player);
-        projectile1.StaticCheckCollision(ground3, player);
+        player.projectile.StaticCheckCollision(ground.getBody());
+        player.projectile.StaticCheckCollision(ground2.getBody());
+        player.projectile.StaticCheckCollision(ground3.getBody());
+        player.projectile.StaticCheckCollision(player.getBody());
 
-        //TIRO
-            totalTime += deltaTime;
-
-            if (totalTime >= switchTime)
-            {
-                projectile1.setVelocityY(0.0f);
-                projectile1.setIsAvailable(true);
-                if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-                {
-                    //if(projectile1.getIsAvailable() == true)
-                    //{
-                        totalTime = 0.0f;
-                        projectile1.setIsAvailable(false);
-                        projectile1.setFaceRight(player.getFaceRight());
-                        projectile1.setBodyPosition(player.getBody().getPosition(), player.getFaceRight());
-                    //}
-                }
-            }
-                projectile1.Update(deltaTime);
+        player.projectile.Update(deltaTime);
 
         window.clear(sf::Color(150, 150, 150));
         window.setView(view);
@@ -118,10 +99,12 @@ int main()
         ground2.Draw(window);
         ground3.Draw(window);
         bush.Draw(window);
+
             //DESENHA O TIRO
-            if(projectile1.getIsAvailable() == false)
-            projectile1.Draw(window);
-            cout << endl <<projectile1.getBody().getPosition().x << endl;
+            if(player.projectile.getIsAvailable() == false)
+            {
+                player.projectile.Draw(window);
+            }
 
         window.display();
     }

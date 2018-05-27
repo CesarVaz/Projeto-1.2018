@@ -1,26 +1,14 @@
 #include "Projectile.h"
 
-Projectile::Projectile(Player player)
+Projectile::Projectile(sf::Texture* projTexture):
+    animation(projTexture)
 {
-    this->faceRight = player.getFaceRight();
-    body.setSize(sf::Vector2f(20,10));
+    body.setSize(sf::Vector2f(10,5));
     body.setOrigin(body.getSize()/2.0f);
-    iniPosition = player.GetPosition();
-
-    if(faceRight == true)
-    {
-        iniPosition.x += 65.0f;
-        iniPosition.y += 7.5f;
-    }
-    else
-    {
-        iniPosition.x -= 65.0f;
-        iniPosition.y += 7.5f;
-    }
-
-    body.setPosition(iniPosition);
+    body.setTexture(projTexture);
     isAvailable = true;
 }
+
 
 Projectile::~Projectile()
 {
@@ -33,17 +21,18 @@ void Projectile::Update(float deltaTime)
     {
         if(faceRight == true)
         {
-            velocity.x = 8000.0f;
+            velocity.x = 2000.0f;
         }
 
         else
         {
-            velocity.x = -8000.0f;
+            velocity.x = -2000.0f;
         }
         velocity.y += 981.0f * deltaTime;
         body.move(velocity * deltaTime);
+        animation.Update(0, 0.0f, faceRight);
+        body.setTextureRect(animation.uvRect);
     }
-
 
 }
 
@@ -53,23 +42,15 @@ void Projectile::Draw(sf::RenderWindow& window)
 }
 
 
-void Projectile::StaticCheckCollision(Platform &platform, Player &player)
+void Projectile::StaticCheckCollision(sf::RectangleShape target)
 {
-    if(body.getGlobalBounds().intersects(platform.getBody().getGlobalBounds()))
+    if(body.getGlobalBounds().intersects(target.getGlobalBounds()))
     {
         setIsAvailable(true);
         velocity.y = 0.0f;
         velocity.x = 0.0f;
     }
 
-    /* RETIRAR DO COMENTARIO QUANTO TIVER OUTROS "PLAYERS"
-    if(body.getGlobalBounds().intersects(player.getBody().getGlobalBounds()))
-    {
-        setIsAvailable(true);
-        velocity.y = 0.0f;
-        velocity.x = 0.0f;
-    }
-    */
 }
 
 void Projectile::setBodyPosition(sf::Vector2f playerPos, bool faceRight)
@@ -103,12 +84,17 @@ bool Projectile::getIsAvailable()
     return isAvailable;
 }
 
-bool Projectile::setFaceRight(bool faceRight)
+void Projectile::setFaceRight(bool faceRight)
 {
     this->faceRight = faceRight;
 }
 
-            sf::Vector2f Projectile::setVelocityY(float y)
-            {
-                velocity.y = y;
-            }
+void Projectile::setVelocityY(float y)
+{
+    velocity.y = y;
+}
+
+void Projectile::addVelocity(sf::Vector2f velocity)
+{
+    this->velocity += velocity;
+}
