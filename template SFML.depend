@@ -1,10 +1,10 @@
 # depslib dependency file v1.0
-1526346384 source:c:\users\custom\documents\projetos c\template sfml\main.cpp
+1528153207 source:c:\users\custom\documents\projetos c\template sfml\main.cpp
 	<SFML/Graphics.hpp>
 	<iostream>
-	"Player.h"
-	"Platform.h"
 	<stdlib.h>
+	"Player.h"
+	"Enemy.h"
 
 1486736397 c:\users\custom\documents\projetos c\template sfml\include\sfml\graphics.hpp
 	<SFML/Window.hpp>
@@ -394,36 +394,60 @@
 	<string>
 	<vector>
 
-1526333815 c:\users\custom\documents\projetos c\template sfml\include\player.h
-	<SFML/Graphics.hpp>
-	"Animation.h"
-	"Platform.h"
-	<math.h>
+1528156210 c:\users\custom\documents\projetos c\template sfml\include\player.h
 	<iostream>
+	<math.h>
+	<vector>
+	"Projectile.h"
 
-1526269937 c:\users\custom\documents\projetos c\template sfml\include\animation.h
+1528152132 c:\users\custom\documents\projetos c\template sfml\include\animation.h
 	<SFML/Graphics.hpp>
 
 1526278062 c:\users\custom\documents\projetos c\template sfml\include\platform.h
 	<SFML/Graphics.hpp>
 
-1525782706 c:\users\custom\documents\projetos c\template sfml\include\collider.h
-	"Player.h"
+1526842259 c:\users\custom\documents\projetos c\template sfml\include\collider.h
 
-1524749081 source:c:\users\custom\documents\projetos c\template sfml\src\animation.cpp
+1527434171 source:c:\users\custom\documents\projetos c\template sfml\src\animation.cpp
 	"Animation.h"
 
 1526270247 source:c:\users\custom\documents\projetos c\template sfml\src\platform.cpp
 	"Platform.h"
 
-1526333815 source:c:\users\custom\documents\projetos c\template sfml\src\player.cpp
+1528155705 source:c:\users\custom\documents\projetos c\template sfml\src\player.cpp
 	"Player.h"
 
-1526333367 c:\users\custom\documents\projetos c\template sfml\include\projectile.h
+1528156210 c:\users\custom\documents\projetos c\template sfml\include\projectile.h
+	"Platform.h"
+	"Animation.h"
+
+1528152228 source:c:\users\custom\documents\projetos c\template sfml\src\projectile.cpp
+	"Projectile.h"
+
+1526842259 source:c:\users\custom\documents\projetos c\template sfml\src\collider.cpp
+	"Collider.h"
+
+1527290880 source:c:\users\custom\documents\projetos c\template sfml\src\retangulo teste.cpp
+	"Retangulo teste.h"
+
+1527290861 c:\users\custom\documents\projetos c\template sfml\include\retangulo teste.h
 	<SFML/Graphics.hpp>
 	"Animation.h"
 	"Platform.h"
-
-1526333367 source:c:\users\custom\documents\projetos c\template sfml\src\projectile.cpp
+	<math.h>
+	<iostream>
 	"Projectile.h"
+	<new>
+
+1527454458 c:\users\custom\documents\projetos c\template sfml\include\rect_teste.h
+	<SFML/Graphics.hpp>
+
+1527454458 source:c:\users\custom\documents\projetos c\template sfml\src\rect_teste.cpp
+	"Rect_Teste.h"
+
+1528154127 c:\users\custom\documents\projetos c\template sfml\include\enemy.h
+	"Player.h"
+
+1528154879 source:c:\users\custom\documents\projetos c\template sfml\src\enemy.cpp
+	"Enemy.h"
 

@@ -1,44 +1,71 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include "Animation.h"
-#include "Platform.h"
-#include <math.h>
 
+//#include <SFML/Graphics.hpp>
 #include <iostream>
+#include <math.h>
+#include <vector>
+
+#include "Projectile.h"
+
 using namespace std;
 
-
-class Player
+class Player: public Animation
 {
+    protected:
+        Projectile projectile;
+        vector<Projectile> vectProj;
+
     public:
-        Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed);
-        Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, float speed, sf::Vector2f Position);
+        //ctor dtor
+        Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Texture* projTexture, float speed);
         virtual ~Player();
 
-        void Update(float deltaTime);
+        //sets
+        void setSpeed(float _speed);
+        void setBodyPosition(float x, float y);
+
+        //gets
+        sf::RectangleShape getBody();
+        sf::Vector2f GetPosition();
+        bool getFaceRight();
+
+        //interacoes com o ambiente
+        //do personagem
+        void CheckActivePlatform(Platform &platform);
+        void StaticCheckCollision(Platform &platform);
+        void MovableCheckCollision(Platform &platform, float mass);
+        //do tiro
+        void Projectile_CheckCollision(sf::RectangleShape target);
+        void Projectile_CheckCollision_Damage(sf::RectangleShape target, float &damage);
+
+
+        //Atualizacao e grafico personagem
+        void Update_Player(float deltaTime); //QUERO QUE SEJA "OVERRIDEN"
         void Draw(sf::RenderWindow& window);
 
-            sf::Vector2f GetPosition();
 
-            void setSpeed(float _speed);
+        //Atualizacao e grafico tiro
+        void Projectile_Update(float deltaTime);
+        void Projectile_Draw(sf::RenderWindow& window);
 
-            void setBodyPosition(float x, float y);
+    public:
+        float damage;
 
-            sf::RectangleShape getBody();
-
-            void CheckActivePlatform(Platform &platform);
-            void StaticCheckCollision(Platform &platform);
-            void MovableCheckCollision(Platform &platform, float mass);
-
-    private:
+    protected:
+        unsigned int i;
         sf::RectangleShape body;
-        Animation animation;
         unsigned int row;
-        float speed, def_Speed;
+        float speed;
         bool faceRight;
         bool hitTheFloor;
         sf::Vector2f velocity;
         float jumpHeight;
-        sf::Vector2f collisionDirection; //sem uso
+
+        //CD == cooldown
+        float shootCD;
+        float jumpCD;
+
+        //usado nos enemies
+        bool hitTheWall;
 };
 
