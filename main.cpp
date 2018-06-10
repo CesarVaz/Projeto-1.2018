@@ -2,37 +2,44 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "Player.h"
-//#include "Platform.h"
+#include <stdio.h>      /* NULL */
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
+
 #include "Enemy.h"
 
 using namespace std;
 
-static const float VIEW_HEIGHT = 1024.0f;
-static const float VIEW_WIDTH = 600.0f;
-static const float def_Speed = 500.0f;
+static const float VIEW_WIDTH = 1024.0f;    /*largura da tela*/
+static const float VIEW_HEIGHT = 600.0f;    /*altura da tela*/
+static const float def_Speed = 500.0f;      /*velocidade do personagem*/
+static const unsigned int nPlatforms = 6;   /*numero de plataformas*/
+static const unsigned int nEnemies = 4;     /*numero de inimigos*/
 
-void ResizeView(const sf::RenderWindow& window, sf::View& view)
+void ResizeView(const sf::RenderWindow &window, sf::View &view)
 {
     float aspectRatio = float(window.getSize().x / float(window.getSize().y));
-    view.setSize(VIEW_HEIGHT * aspectRatio, VIEW_WIDTH * aspectRatio);
+    view.setSize(VIEW_WIDTH * aspectRatio, VIEW_HEIGHT * aspectRatio);
 }
 
 int main()
 {
-    //unsigned int i = 0;
+    unsigned int i, j;
+    int randPlatformPos;
+    int randEnemyPos;
+    srand (time(NULL));
 
-    sf::RenderWindow window(sf::VideoMode(VIEW_HEIGHT, VIEW_WIDTH), "Jogo de Tiro em 2D", sf::Style::Close | sf::Style::Resize);
+    sf::RenderWindow window(sf::VideoMode(VIEW_WIDTH, VIEW_HEIGHT), "Jogo de Tiro em 2D", sf::Style::Close | sf::Style::Resize);
 
-    sf::View view(sf::Vector2f(0.0f, 0.0f),sf::Vector2f(VIEW_HEIGHT, VIEW_WIDTH));
+    sf::View view(sf::Vector2f(0.0f, 0.0f),sf::Vector2f(VIEW_WIDTH, VIEW_HEIGHT));
     sf::Texture playerTexture;
     playerTexture.loadFromFile("textures/Player_tex.png");
 
+    sf::Texture enemyTexture;
+    enemyTexture.loadFromFile("textures/Inimigo.png");
+
     sf::Texture groundTexture;
     groundTexture.loadFromFile("textures/ground.png");
-
-    sf::Texture bushTexture;
-    bushTexture.loadFromFile("textures/bush.png");
 
     sf::Texture floorTexture;
     floorTexture.loadFromFile("textures/floor.png");
@@ -41,14 +48,44 @@ int main()
     bulletTexture.loadFromFile("textures/Bullet.png");
 
     Player player(&playerTexture, sf::Vector2u(3, 4), 0.1f, &bulletTexture, def_Speed);
-                Enemy enemy(&playerTexture, sf::Vector2u(3, 4), 0.1f, &bulletTexture, def_Speed);
+    Enemy enemy(&enemyTexture, sf::Vector2u(3, 4), 0.1f, &bulletTexture, def_Speed / 2);
+    vector<Enemy> vEnemy;
 
-    Platform ground(&groundTexture, sf::Vector2f(576.0f, 156.0f), sf::Vector2f(1020.0f, 0.0f));
-    Platform ground2(&groundTexture, sf::Vector2f(576.0f, 156.0f), sf::Vector2f(1596.0f, 156.0f));
-    Platform ground3(&groundTexture, sf::Vector2f(576.0f, 156.0f), sf::Vector2f(444.0f, -156.0f));
-    Platform bush(&bushTexture, sf::Vector2f(468.0f, 140.0f), sf::Vector2f(500.0f, 10.0f));
-    Platform floor(&floorTexture, sf::Vector2f(576.0f, 36.0f), sf::Vector2f(1020.0f, -95.0f));
+    //PRIMEIRA PLATAFORMA (USADA COMO REFERENCIA)
+    Platform platform(&groundTexture, sf::Vector2f(576.0f, 192.0f), sf::Vector2f(0.0f, 0.0f));
+    vector<Platform> vPlatform;
+    vPlatform.push_back(platform);
 
+    Platform floor(&floorTexture, sf::Vector2f(576.0f, 48.0f), sf::Vector2f(platform.getBody().getPosition().x, platform.getBody().getPosition().y - platform.getBody().getSize().y / 2));
+    vector<Platform> vFloor;
+    vFloor.push_back(floor);
+
+    for(i = vPlatform.size(); i < nPlatforms; i++)
+    {
+        vPlatform.push_back(platform);
+
+        randPlatformPos = rand() % 3;
+        randPlatformPos --;
+
+        //COLOCANDO PLATAFORMA[i] A FRENTE DA ANTERIOR E EM ALTURA ALEATORIA
+        vPlatform[i].setBodyPosition(vPlatform[i-1].getBody().getPosition().x + vPlatform[i-1].getBody().getSize().x
+        , vPlatform[i-1].getBody().getPosition().y + randPlatformPos * (vPlatform[i-1].getBody().getSize().y));
+
+        //O MESMO COM FLOOR
+        vFloor.push_back(floor);
+        vFloor[i].setBodyPosition(vFloor[i-1].getBody().getPosition().x + vPlatform[i-1].getBody().getSize().x
+        , vFloor[i-1].getBody().getPosition().y + randPlatformPos * (vPlatform[i-1].getBody().getSize().y));
+    }
+
+    //CRIAR INIMIGOS
+    while(vEnemy.size() < nEnemies)
+    {
+        randEnemyPos = rand() % vPlatform.size();
+        vEnemy.push_back(enemy);
+        //DISTRIBUI INIMIGOS PELAS PLATAFORMAS DE FORMA ALEATÓRIA
+        vEnemy[vEnemy.size() - 1].setBodyPosition(vPlatform[randEnemyPos].getBody().getPosition().x
+        , vPlatform[randEnemyPos].getBody().getPosition().y - vPlatform[randEnemyPos].getBody().getSize().y);
+    }
 
     float deltaTime = 0.0f;
     sf::Clock clock;
@@ -56,11 +93,13 @@ int main()
     while (window.isOpen())
     {
         deltaTime = clock.restart().asSeconds();
-        sf::Event evnt;
-        while (window.pollEvent(evnt))
+        sf::Event event;
+
+        while (window.pollEvent(event))
         {
             deltaTime = clock.restart().asSeconds();
-            switch (evnt.type)
+
+            switch (event.type)
             {
             case sf::Event::Closed:
                 window.close();
@@ -72,58 +111,60 @@ int main()
                 break;
             }
         }
-
-        player.Update_Player(deltaTime);
-                enemy.Update_Enemy(deltaTime, player);
+        //INPUT
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+            player.move("right");
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+            player.move("left");
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            player.jump();
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+            player.shoot();
 
         view.setCenter(player.GetPosition());
-
-        player.CheckActivePlatform(ground);
-        player.CheckActivePlatform(ground2);
-        player.CheckActivePlatform(ground3);
-
-        player.StaticCheckCollision(ground);
-        player.StaticCheckCollision(ground2);
-        player.StaticCheckCollision(ground3);
-
-                enemy.CheckActivePlatform(ground);
-                enemy.CheckActivePlatform(ground2);
-                enemy.CheckActivePlatform(ground3);
-
-                enemy.StaticCheckCollision(ground);
-                enemy.StaticCheckCollision(ground2);
-                enemy.StaticCheckCollision(ground3);
-
         window.clear(sf::Color(150, 150, 150));
         window.setView(view);
 
-        floor.Draw(window);
-        player.Draw(window);
-                enemy.Draw(window);
-        ground.Draw(window);
-        ground2.Draw(window);
-        ground3.Draw(window);
-        bush.Draw(window);
+        //COLISAO DO JOGADOR E DOS TIROS DO JOGADOR COM AS PLATAFORMAS + DESENHO DAS PLATAFORMAS E FLOORS
+        for(i = 0; i < vPlatform.size(); i++)
+        {
+            player.CheckCollision_Player(vPlatform[i].getBody());
+            player.CheckCollision_ProjectileVector(vPlatform[i].getBody());
+        }
 
-        player.Projectile_CheckCollision(ground.getBody());
-        player.Projectile_CheckCollision(ground2.getBody());
-        player.Projectile_CheckCollision(ground3.getBody());
-        player.Projectile_CheckCollision_Damage(player.getBody(), player.damage);
-        player.Projectile_CheckCollision_Damage(enemy.getBody(), enemy.damage);
+        player.Update_Player(deltaTime);
+        player.Update_ProjectileVector(deltaTime);
 
-                enemy.Projectile_CheckCollision(ground.getBody());
-                enemy.Projectile_CheckCollision(ground2.getBody());
-                enemy.Projectile_CheckCollision(ground3.getBody());
-                enemy.Projectile_CheckCollision_Damage(player.getBody(), player.damage);
-                enemy.Projectile_CheckCollision_Damage(enemy.getBody(), enemy.damage);
+        //COLISAO DOS INIMIGOS COM PLATAFORMA / INTERAÇAO DOS PROJÉTEIS / UPDATE E DRAW DOS INIMIGOS
+        for(i = 0; i < vEnemy.size(); i++)
+        {
+            for(j = 0; j< vPlatform.size(); j++)
+            {
+                vEnemy[i].CheckCollision_Player(vPlatform[j].getBody());
+                vEnemy[i].CheckCollision_ProjectileVector(vPlatform[j].getBody());
+            }
 
-        player.Projectile_Update(deltaTime);
-                enemy.Projectile_Update(deltaTime);
+            if(vEnemy[i].getDead() == false)
+                player.CheckCollision_ProjectileVector_Damage(vEnemy[i].getBody(), vEnemy[i].damage);
 
-        player.Projectile_Draw(window);
-                enemy.Projectile_Draw(window);
+            vEnemy[i].CheckCollision_ProjectileVector_Damage(player.getBody(), player.damage);
 
+            vEnemy[i].Update_Player(deltaTime, player);
+            vEnemy[i].Update_ProjectileVector(deltaTime);
+        }
 
+        for(i = 0; i < vPlatform.size(); i++)
+        {
+            vFloor[i].Draw_Platform(window);
+            vPlatform[i].Draw_Platform(window);
+        }
+        for(i = 0; i < vEnemy.size(); i++)
+        {
+            vEnemy[i].Draw_Player(window);
+            vEnemy[i].Draw_ProjectileVector(window);
+        }
+        player.Draw_ProjectileVector(window);
+        player.Draw_Player(window);
 
         window.display();
     }

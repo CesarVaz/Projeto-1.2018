@@ -8,7 +8,6 @@ class Projectile: public Animation
     public:
         //ctor dtor
         Projectile(sf::Texture* projTexture);
-        virtual ~Projectile();
 
         //sets
         void setBodyPosition(sf::Vector2f playerPos, bool faceRight);

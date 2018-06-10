@@ -1,7 +1,7 @@
 #include "Player.h"
 
 static const float sCD = 0.25f;
-static const float jCD = 0.5f;
+static const float jCD = 1.0f;
 
 //ctor dtor
 Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Texture* projTexture, float speed):
@@ -10,22 +10,18 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
     this->speed = speed;
     row = 0;
     faceRight = true;
-    setBodyPosition(400.0f, -400.0f);
+    setBodyPosition(0.0f, -192.0f);
+    hitTheFloor = false;
+    jumpHeight = 180.0f;
 
     shootCD = sCD;
     jumpCD = jCD;
 
-    texture->setSmooth(true);
     body.setSize(sf::Vector2f(100.0f, 150.0f));
     body.setOrigin(body.getSize()/2.0f);
     body.setTexture(texture);
 
     damage = 0.0f;
-}
-
-Player::~Player()
-{
-    //dtor
 }
 
 //sets
@@ -55,103 +51,50 @@ bool Player::getFaceRight()
     return faceRight;
 }
 
+bool Player::getDead()
+{
+    return dead;
+}
+
 //interacoes com o ambiente
 //do personagem
-void Player::CheckActivePlatform(Platform &platform)
+void Player::CheckCollision_Player(sf::RectangleShape platformBody)
 {
-    if(body.getPosition().x > platform.getBody().getPosition().x + (platform.getBody().getSize().x / 2)  ||  body.getPosition().x < platform.getBody().getPosition().x - (platform.getBody().getSize().x / 2))
-        platform.set_isActivePlatform(false);
-
-    else
-        platform.set_isActivePlatform(true);
-
-    if(platform.get_isActivePlatform() == true)
-    {
-        if((body.getPosition().y - (platform.getBody().getPosition().y + platform.getBody().getSize().y / 2) < -250.0f))
+    if(body.getPosition().x < globalBounds.left || body.getPosition().x > globalBounds.left + globalBounds.width)
         hitTheFloor = false;
-    }
-}
 
-void Player::StaticCheckCollision(Platform &platform)
-{
-    hitTheWall = false;
-    if(body.getGlobalBounds().intersects(platform.getBody().getGlobalBounds()))
+    if(body.getGlobalBounds().intersects(platformBody.getGlobalBounds()))
     {
+        globalBounds = platformBody.getGlobalBounds();
 
-        if(body.getPosition().y > platform.getBody().getPosition().y + platform.getBody().getSize().y / 2)
+        if(body.getPosition().y > platformBody.getPosition().y + platformBody.getSize().y / 2)
         {
             body.move(0.0, 1.0);
-            velocity.y = 0.0f;
         }
 
         else
-        if(body.getPosition().y < platform.getBody().getPosition().y - platform.getBody().getSize().y / 2)
+        if(body.getPosition().y < platformBody.getPosition().y - platformBody.getSize().y / 2)
         {
             body.move(0.0, - 1.0);
-            velocity.y = 0.0f;
             hitTheFloor = true;
         }
 
         else
-        if(body.getPosition().x < platform.getBody().getPosition().x - platform.getBody().getSize().x / 2)
+        if(body.getPosition().x < platformBody.getPosition().x - platformBody.getSize().x / 2)
         {
             body.move(- 1.0, 0.0);
-            velocity.x = 0.0f;
-            hitTheWall = true;
         }
 
         else
-        if(body.getPosition().x > platform.getBody().getPosition().x + platform.getBody().getSize().x / 2)
+        if(body.getPosition().x > platformBody.getPosition().x + platformBody.getSize().x / 2)
         {
             body.move(1.0, 0.0);
-            velocity.x = 0.0f;
-            hitTheWall = true;
-        }
-    }
-}
-
-void Player::MovableCheckCollision(Platform &platform, float mass)
-{
-    if(abs(mass) > 10.0)
-        mass = 10.0f;
-
-    if(body.getGlobalBounds().intersects(platform.getBody().getGlobalBounds()))
-    {
-
-        if(body.getPosition().y > platform.getBody().getPosition().y + platform.getBody().getSize().y / 2)
-        {
-            body.move(0.0, 1.0);
-            velocity.y = 0.0f;
-        }
-
-        else
-        if(body.getPosition().y < platform.getBody().getPosition().y - platform.getBody().getSize().y / 2)
-        {
-            body.move(0.0, - 1.0);
-            velocity.y = 0.0f;
-            hitTheFloor = true;
-        }
-
-        else
-        if(body.getPosition().x < platform.getBody().getPosition().x - platform.getBody().getSize().x / 2)
-        {
-            body.move(- 1.0, 0.0);
-            platform.bodyMove(10.0 - abs(mass) , 0.0f);
-            velocity.x = 0.0f;
-        }
-
-        else
-        if(body.getPosition().x > platform.getBody().getPosition().x + platform.getBody().getSize().x / 2)
-        {
-            body.move(1.0, 0.0);
-            platform.bodyMove(-(10.0 - abs(mass)) , 0.0f);
-            velocity.x = 0.0f;
         }
     }
 }
 
 //do tiro
-void Player::Projectile_CheckCollision(sf::RectangleShape target)
+void Player::CheckCollision_ProjectileVector(sf::RectangleShape target)
 {
     for(i = 0; i < vectProj.size(); i++)
     {
@@ -165,7 +108,7 @@ void Player::Projectile_CheckCollision(sf::RectangleShape target)
     }
 }
 
-void Player::Projectile_CheckCollision_Damage(sf::RectangleShape target, float &damage)
+void Player::CheckCollision_ProjectileVector_Damage(sf::RectangleShape target, float &damage)
 {
     for(i = 0; i < vectProj.size(); i++)
     {
@@ -179,98 +122,113 @@ void Player::Projectile_CheckCollision_Damage(sf::RectangleShape target, float &
     }
 }
 
+//*****************
+void Player::move(string direction)
+{
+    if(dead == false)
+    {
+        if(direction == "left")
+        {
+            velocity.x -= speed;
+        }
+
+        if(direction == "right")
+        {
+            velocity.x += speed;
+        }
+    }
+}
+
+void Player::jump()
+{
+    if(dead == false)
+    {
+        if (jumpCD >= jCD && hitTheFloor == true)
+        {
+            velocity.y = -sqrtf(2.0f * 981.0f * jumpHeight);
+            jumpCD = 0.0f;
+            hitTheFloor = false;
+        }
+    }
+}
+
+void Player::shoot()
+{
+    if(dead == false)
+    {
+        if (shootCD >= sCD)
+        {
+            shootCD = 0.0f;
+            vectProj.push_back(projectile);
+            vectProj[vectProj.size() - 1].addVelocity(velocity);
+            vectProj[vectProj.size() - 1].setFaceRight(getFaceRight());
+            vectProj[vectProj.size() - 1].setBodyPosition(body.getPosition(), getFaceRight());
+        }
+    }
+}
+//*****************
+
 //Atualizacao e grafico personagem
 void Player::Update_Player(float deltaTime)
 {
-    velocity.x = 0.0f;
-    jumpHeight = 180.0f;
     shootCD += deltaTime;
     jumpCD += deltaTime;
 
     //gravidade
     velocity.y += 981.0f * deltaTime;
+    if (hitTheFloor == true)
+        velocity.y = 0.0f;
 
-    //movimento
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+    if(damage >= 200 && dead == false)
     {
-        velocity.x -= speed;
+        if(faceRight == true)
+            body.rotate(270);
+        else
+            body.rotate(90);
+
+        hitTheFloor = false;
+
+        row = 3;
+
+        dead = true;
     }
 
-    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+    if(dead == false)
     {
-        velocity.x += speed;
+        if(velocity.x == 0.0f)
+            row = 1;
+        else
+            row = 2;
     }
 
-    //pulo
-    if (jumpCD >= jCD)
-    {
-        if((sf::Keyboard::isKeyPressed(sf::Keyboard::Space) || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) && hitTheFloor == true)
-        {
-            velocity.y = -sqrtf(2.0f * 981.0f * jumpHeight);
-            hitTheFloor = false;
-            jumpCD = 0.0f;
-        }
-    }
-
-    //tiro
-    if (shootCD >= sCD)
-    {
-        if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
-        {
-            vectProj.push_back(projectile);
-            vectProj[vectProj.size() - 1].addVelocity(velocity);
-            shootCD = 0.0f;
-            vectProj[vectProj.size() - 1].setFaceRight(getFaceRight());
-            vectProj[vectProj.size() - 1].setBodyPosition(body.getPosition(), getFaceRight());
-        }
-    }
+    if(velocity.x > 0.0f)
+        faceRight = true;
+    if(velocity.x < 0.0f)
+        faceRight = false;
 
     for(i = 0; i < vectProj.size(); i++)
     {
         vectProj[i].totalTime += deltaTime;
-
         if(vectProj[i].totalTime >= vectProj[i].duration)
         {
             vectProj.erase (vectProj.begin()+i);
-        }
-    }
-
-    if(hitTheFloor == true)
-    {
-        velocity.y = 0.0;
-    }
-
-    if(velocity.x == 0.0f)
-    {
-        row = 1;
-    }
-
-    else
-    {
-        row = 2;
-
-        if(velocity.x > 0.0f)
-        {
-            faceRight = true;
-        }
-        else
-        {
-            faceRight = false;
+            vectProj.shrink_to_fit();
         }
     }
 
     Update(row, deltaTime, faceRight);
     body.setTextureRect(uvRect);
     body.move(velocity * deltaTime);
+    velocity.x = 0.0f;
 }
 
-void Player::Draw(sf::RenderWindow& window)
+void Player::Draw_Player(sf::RenderWindow& window)
 {
     window.draw(body);
 }
 
 //Atualizacao e grafico tiro
-void Player::Projectile_Update(float deltaTime)
+void Player::Update_ProjectileVector(float deltaTime)
 {
     for(i = 0; i < vectProj.size(); i++)
     {
@@ -278,7 +236,7 @@ void Player::Projectile_Update(float deltaTime)
     }
 }
 
-void Player::Projectile_Draw(sf::RenderWindow& window)
+void Player::Draw_ProjectileVector(sf::RenderWindow& window)
 {
     for(i = 0; i < vectProj.size(); i++)
     {

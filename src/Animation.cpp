@@ -25,10 +25,6 @@ Animation::Animation(sf::Texture* texture)
     uvRect.height = texture->getSize().y / float(imageCount.y);
 }
 
-Animation::~Animation()
-{
-}
-
 void Animation::Update(int row, float deltaTime, bool faceRight)
 {
     currentImage.y = row;

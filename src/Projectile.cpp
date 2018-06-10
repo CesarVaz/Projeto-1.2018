@@ -1,6 +1,7 @@
 #include "Projectile.h"
 
 static const float bul_Speed = 2000.0f;
+static const float dmg = 20.0f;
 
 //ctor dtor
 Projectile::Projectile(sf::Texture* projTexture):
@@ -14,11 +15,6 @@ Projectile::Projectile(sf::Texture* projTexture):
     collision = false;
     duration = 2.0f;
     totalTime = 0.0f;
-}
-
-Projectile::~Projectile()
-{
-    //dtor
 }
 
 //sets
@@ -77,7 +73,7 @@ void Projectile::CheckCollision_Damage(sf::RectangleShape target, float &damage)
             velocity.y = 0.0f;
             velocity.x = 0.0f;
             collision = true;
-            damage += 20.0f;
+            damage += dmg;
         }
     }
 }
