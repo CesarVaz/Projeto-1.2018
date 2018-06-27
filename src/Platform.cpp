@@ -13,6 +13,11 @@ void Platform::Draw(sf::RenderWindow& window)
     window.draw(body);
 }
 
+sf::RectangleShape Platform::getBody()
+{
+    return body;
+}
+
 void Platform::bodyMove(float moveX, float moveY)
 {
     body.move(moveX, moveY);

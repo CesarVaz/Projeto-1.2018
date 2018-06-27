@@ -9,14 +9,11 @@ class Platform
 
         void Draw(sf::RenderWindow& window);
 
-        sf::RectangleShape getBody()
-        {
-            return body;
-        }
+        sf::RectangleShape getBody();
 
         void bodyMove(float moveX, float moveY);
         void setBodyPosition(float x, float y);
 
-    private:
+    protected:
         sf::RectangleShape body;
 };

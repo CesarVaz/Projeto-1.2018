@@ -21,7 +21,8 @@ Player::Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, 
     body.setOrigin(body.getSize()/2.0f);
     body.setTexture(texture);
 
-    damage = 0.0f;
+    damage = 0;
+    dead = false;
 }
 
 //sets
@@ -58,35 +59,35 @@ bool Player::getDead()
 
 //interacoes com o ambiente
 //do personagem
-void Player::CheckCollision_Player(Platform &platform)
+void Player::CheckCollision_Player(sf::RectangleShape platformBody)
 {
-    if(body.getPosition().x < globalBounds.left || body.getPosition().x > globalBounds.left + globalBounds.width)
+    if((body.getGlobalBounds().left + body.getGlobalBounds().width) < platformBounds.left || body.getGlobalBounds().left > (platformBounds.left + platformBounds.width))
         hitTheFloor = false;
 
-    if(body.getGlobalBounds().intersects(platform.getBody().getGlobalBounds()))
+    if(body.getGlobalBounds().intersects(platformBody.getGlobalBounds()))
     {
-        globalBounds = platform.getBody().getGlobalBounds();
+        platformBounds = platformBody.getGlobalBounds();
 
-        if(body.getPosition().y > platform.getBody().getPosition().y + platform.getBody().getSize().y / 2)
+        if(body.getPosition().y > platformBody.getPosition().y + platformBody.getSize().y / 2)
         {
             body.move(0.0, 1.0);
         }
 
         else
-        if(body.getPosition().y < platform.getBody().getPosition().y - platform.getBody().getSize().y / 2)
+        if(body.getPosition().y < platformBody.getPosition().y - platformBody.getSize().y / 2)
         {
             body.move(0.0, - 1.0);
             hitTheFloor = true;
         }
 
         else
-        if(body.getPosition().x < platform.getBody().getPosition().x - platform.getBody().getSize().x / 2)
+        if(body.getPosition().x < platformBody.getPosition().x - platformBody.getSize().x / 2)
         {
             body.move(- 1.0, 0.0);
         }
 
         else
-        if(body.getPosition().x > platform.getBody().getPosition().x + platform.getBody().getSize().x / 2)
+        if(body.getPosition().x > platformBody.getPosition().x + platformBody.getSize().x / 2)
         {
             body.move(1.0, 0.0);
         }
@@ -109,7 +110,7 @@ void Player::CheckCollision_ProjectileVector(sf::RectangleShape target)
     }
 }
 
-void Player::CheckCollision_ProjectileVector_Damage(sf::RectangleShape target, float &damage)
+void Player::CheckCollision_ProjectileVector_Damage(sf::RectangleShape target, int &damage)
 {
     for(i = 0; i < vectProj.size(); i++)
     {
@@ -178,6 +179,9 @@ void Player::Update_Player(float deltaTime)
     velocity.y += 981.0f * deltaTime;
     if (hitTheFloor == true)
         velocity.y = 0.0f;
+
+	if (velocity.y > 3000.0f)
+		dead = true;
 
     if(damage >= 200 && dead == false)
     {

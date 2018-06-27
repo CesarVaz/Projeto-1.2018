@@ -12,6 +12,18 @@ Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount, float switch
     uvRect.height = texture->getSize().y / float(imageCount.y);
 }
 
+//IMAGENS QUE NAO VARIAM COM O TEMPO
+Animation::Animation(sf::Texture* texture, sf::Vector2u imageCount)
+{
+	this->imageCount = imageCount;
+	switchTime = 0.0f;
+	totalTime = 0.0f;
+	currentImage.x = 0;
+
+	uvRect.width = texture->getSize().x / float(imageCount.x);
+	uvRect.height = texture->getSize().y / float(imageCount.y);
+}
+
 //Para imagens unicas:
 Animation::Animation(sf::Texture* texture)
 {
@@ -54,4 +66,23 @@ void Animation::Update(int row, float deltaTime, bool faceRight)
         uvRect.width = -abs(uvRect.width);
     }
 
+}
+
+//Atualiza quando requisitado
+void Animation::Update(int row)
+{
+	currentImage.x++;
+	currentImage.y = row;
+
+	currentImage.x++;
+
+	if (currentImage.x >= imageCount.x)
+	{
+		currentImage.x = 0;
+	}
+
+	uvRect.top = currentImage.y * uvRect.height;
+
+	uvRect.left = currentImage.x * uvRect.width;
+	uvRect.width = abs(uvRect.width);
 }

@@ -19,7 +19,7 @@ class Projectile: public Animation
 
         //interacoes com o ambiente
         void CheckCollision(sf::RectangleShape target);
-        void CheckCollision_Damage(sf::RectangleShape target, float &damage);
+        void CheckCollision_Damage(sf::RectangleShape target, int &damage);
 
         //Atualizacao e grafico tiro
         void Update_Projectile(float deltaTime);
@@ -36,7 +36,4 @@ class Projectile: public Animation
         bool faceRight;
         sf::Vector2f velocity;
         sf::Vector2f iniPosition;
-
-        //sem uso
-        float def_Speed;
 };

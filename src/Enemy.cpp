@@ -9,7 +9,7 @@ Enemy::Enemy(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf
 {
     shooting = false;
     setBodyPosition(900.0f, -400.0f);
-    damage = 0.0f;
+    damage = 0;
 }
 
 //Atualizacao e grafico personagem
@@ -84,7 +84,7 @@ void Enemy::Update_Player(float deltaTime, Player &player)
                 velocity.x -= speed / 2.0f;
             }
 
-            if(body.getPosition().x < (globalBounds.left + 100.0f) || body.getPosition().x > (globalBounds.left + globalBounds.width - 100.0f) )
+            if(body.getPosition().x < (platformBounds.left + 100.0f) || body.getPosition().x > (platformBounds.left + platformBounds.width - 100.0f) )
             {
                 velocity.x *= -1.0f;
             }
