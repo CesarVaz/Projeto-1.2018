@@ -11,7 +11,7 @@ using namespace std;
 class Player: public Animation
 {
     public:
-        //ctor dtor
+        //ctor
         Player(sf::Texture* texture, sf::Vector2u imageCount, float switchTime, sf::Texture* projTexture, float speed);
 
         //sets
@@ -26,10 +26,10 @@ class Player: public Animation
 
         //interacoes com o ambiente
         //do personagem
-        void CheckCollision_Player(Platform &platform);
+        void CheckCollision_Player(sf::RectangleShape platformBody);
         //do tiro
         void CheckCollision_ProjectileVector(sf::RectangleShape target);
-        void CheckCollision_ProjectileVector_Damage(sf::RectangleShape target, float &damage);
+        void CheckCollision_ProjectileVector_Damage(sf::RectangleShape target, int &damage);
 
         //INPUTS
         void move(string direction);
@@ -40,13 +40,12 @@ class Player: public Animation
         void Update_Player(float deltaTime);
         void Draw_Player(sf::RenderWindow& window);
 
-
         //Atualizacao e grafico tiro
         void Update_Projectile(float deltaTime);
         void Draw_Projectile(sf::RenderWindow& window);
 
     public:
-        float damage;
+        int damage;
 
     protected:
         Projectile projectile;
@@ -67,7 +66,6 @@ class Player: public Animation
         float jumpCD;
 
         //ULTIMA PLATAFORMA COLIDIDA
-        sf::FloatRect globalBounds;
+        sf::FloatRect platformBounds;
 
 };
-

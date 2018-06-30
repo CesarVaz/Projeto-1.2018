@@ -6,14 +6,14 @@ class Animation
 {
     public:
         Animation(sf::Texture* texture, sf::Vector2u imageCount, float switchTime);
+		Animation(sf::Texture* texture, sf::Vector2u imageCount);
         Animation(sf::Texture* texture);
 
         void Update(int row, float deltaTime, bool faceRight);
-
-    public:
-        sf::IntRect uvRect;
+		void Update(int row);
 
     protected:
+        sf::IntRect uvRect;
         sf::Vector2u imageCount;
         sf::Vector2u currentImage;
 
